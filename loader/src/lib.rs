@@ -11,7 +11,7 @@ pub use crate::loader::{IndirectIdentifier, Loader, LoaderIO, LoaderState};
 pub use crate::rpc_io::RpcIO;
 pub use crate::storage::{
     AssetLoadOp, AssetStorage, AtomicHandleAllocator, DefaultIndirectionResolver, HandleAllocator,
-    IndirectionResolver, LoadHandle, LoadInfo, LoadStatus, LoaderInfoProvider, IndirectionTable,
+    IndirectionResolver, IndirectionTable, LoadHandle, LoadInfo, LoadStatus, LoaderInfoProvider,
 };
 pub use crate::rpc_loader::{Loader, LoaderIO, LoaderState};
 pub use crate::rpc_state::{RpcIO};
