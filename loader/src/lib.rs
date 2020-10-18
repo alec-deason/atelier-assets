@@ -13,6 +13,8 @@ pub use crate::storage::{
     AssetLoadOp, AssetStorage, AtomicHandleAllocator, DefaultIndirectionResolver, HandleAllocator,
     IndirectionResolver, LoadHandle, LoadInfo, LoadStatus, LoaderInfoProvider, IndirectionTable,
 };
+pub use crate::rpc_loader::{Loader, LoaderIO, LoaderState};
+pub use crate::rpc_state::{RpcIO};
 #[cfg(feature = "asset_uuid_macro")]
 pub use atelier_core::asset_uuid;
 pub use atelier_core::{AssetRef, AssetTypeId, AssetUuid};

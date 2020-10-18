@@ -1551,3 +1551,9 @@ mod tests {
             .expect("Failed to spawn `atelier-daemon` thread.")
     }
 }
+
+trait IndirectionResolver {}
+
+/// Resolves indirect [`LoadHandle`]s. See [`LoadHandle::is_indirect`] for details.
+#[derive(Clone)]
+pub struct IndirectionTable(pub(crate) Arc<DashMap<LoadHandle, LoadHandle>>);
