@@ -30,6 +30,8 @@ struct SnapshotChange {
     snapshot: asset_hub::snapshot::Client,
     changed_assets: Vec<AssetUuid>,
     deleted_assets: Vec<AssetUuid>,
+    changed_paths: Vec<PathBuf>,
+    deleted_paths: Vec<PathBuf>,
 }
 
 // While capnp_rpc does not impl Send or Sync, in our usage of the API there can only be one thread
@@ -93,6 +95,14 @@ impl RpcRuntime {
                             changed_assets.push(asset);
                         }
                         loader.invalidate_assets(&changed_assets);
+                        let mut changed_paths = Vec::new();
+                        for path in change.changed_paths {
+                            changed_paths.push(path);
+                        }
+                        for path in change.deleted_paths {
+                            changed_paths.push(path);
+                        }
+                        loader.invalidate_paths(&changed_paths);
                     }
                     InternalConnectionState::Connected(conn)
                 }
@@ -378,6 +388,8 @@ impl asset_hub::listener::Server for ListenerImpl {
                 let response = response.get()?;
                 let mut changed_assets = Vec::new();
                 let mut deleted_assets = Vec::new();
+                let mut changed_paths = Vec::new();
+                let mut deleted_paths = Vec::new();
                 for change in response.get_changes()? {
                     match change.get_event()?.which()? {
                         asset_change_event::ContentUpdateEvent(evt) => {
@@ -389,12 +401,20 @@ impl asset_hub::listener::Server for ListenerImpl {
                             let id = utils::make_array(evt?.get_id()?.get_id()?);
                             deleted_assets.push(id);
                         }
+                        asset_change_event::PathRemoveEvent(evt) => {
+                            deleted_paths.push(PathBuf::from(std::str::from_utf8(evt?.get_path()?)?));
+                        }
+                        asset_change_event::PathUpdateEvent(evt) => {
+                            changed_paths.push(PathBuf::from(std::str::from_utf8(evt?.get_path()?)?));
+                        }
                     }
                 }
                 let _ = channel.send(SnapshotChange {
                     snapshot,
                     changed_assets,
                     deleted_assets,
+                    deleted_paths,
+                    changed_paths,
                 });
                 Ok(())
             });
@@ -403,6 +423,8 @@ impl asset_hub::listener::Server for ListenerImpl {
                 snapshot,
                 changed_assets: Vec::new(),
                 deleted_assets: Vec::new(),
+                changed_paths: Vec::new(),
+                deleted_paths: Vec::new(),
             });
         }
         self.snapshot_change = Some(params.get_latest_change());
