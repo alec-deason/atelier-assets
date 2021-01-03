@@ -22,6 +22,7 @@ The Daemon watches for filesystem events, imports source files, manages metadata
 <details><summary>&check; <b>Move & Rename Source Files Confidently</b></summary><p>Since metadata is stored with the source file and UUIDs are used to identify individual assets, users can move, rename and share source files with others without breaking references between assets.</p></details>
 <details><summary>&check; <b>Bring Your Own Asset Types</b></summary><p>Asset types are not included in this project. You define your own asset types and source file formats by implementing the `Importer` trait and registering these with a file extension. The Daemon will automatically run your `Importer` for files with the registered extension as required. All asset types must implement `serde::Serialize` + `serde::Deserialize` + `type_uuid::TypeUuidDynamic` + `Send`.</p></details>
 <details><summary>&check; <b>RON Importer</b> - *OPTIONAL*</summary><p>An optional Importer and derive macro is included to simplify usage of serialized Rust types as source files using `serde`.
+<details><summary>&check; <b>Import Caching</b></summary><p>Assets imported from a source file are cached by a hash of their source file content and its ID, which avoids repeating expensive file parsing and disk operations.</p></details>
 
 Type definition:
 ```rust
@@ -54,12 +55,11 @@ pub struct CustomAsset {
 The Loader module provides a `Loader` trait for loading assets and an `AssetStorage` trait for storing assets. Game engines usually only need to implement the `AssetStorage` trait, as an optional RpcLoader implementation that loads assets from the Daemon is provided.
 <details><summary>&check; <b>Hot Reloading</b> </summary><p>The built-in `RpcLoader` talks to the `Daemon` and automatically reloads assets in the running engine when an asset has changed.</p></details>
 <details><summary>&check; <b>Automatic Loading of Dependencies</b> </summary><p>When a source file is imported and an asset is produed, dependencies are gathered for the asset and saved as metadata. Loader implementations automatically ensure that dependencies are loaded before the asset is loaded, and that they are unloaded after the asset is unloaded.</p></details>
-<details><summary>&check; <b>serde` Support for Handles</b> 🎉💯 </summary><p>An optional Handle type is provided with support for deserialization and serialization using `serde`. Deserialization works for both an asset's UUID and its path. The UUID or path is automatically resolved to a Handle that refers to the corresponding loaded asset.</p></details>
+<details><summary>&check; <b>serde Support for Handles</b> 🎉💯 </summary><p>An optional Handle type is provided with support for deserialization and serialization using `serde`. Deserialization works for both an asset's UUID and its path. The UUID or path is automatically resolved to a Handle that refers to the corresponding loaded asset.</p></details>
 <details><summary>&check; <b>Automatic Registration of Handle Dependencies</b> 🎉💯</summary><p>Handle references are automatically registered during import for an asset and the referenced assets are subsequently guaranteed to be loaded by the Loader before the depender asset is loaded. This means Handles in assets are guaranteed to be valid.</p></details>
 
 
 ## TODO
-<details><summary><b>Import Caching</b></summary><p>Assets imported from a source file can be cached by a hash of their source file content and its ID, avoiding expensive parsing and disk operations across your whole team.</p></details>
 <details><summary><b>Build Artifact Caching</b></summary><p>Assets are built using the provided build parameters only when requested. An asset's build artifact can be cached by a hash of its build dependencies, build parameters and source file content.</p></details>
 <details><summary><b>Networked artifact caching</b></summary><p>Results of imports and builds can be re-used across your whole team using a networked cache server.</p></details>
 <details><summary><b>Platform-specific builds</b></summary><p>Provide customized build parameters when building an asset and tailor the build artifact for a specific platform.</p></details>
