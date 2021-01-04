@@ -938,11 +938,18 @@ impl Loader {
     }
 
     #[cfg(feature = "handle")]
-    pub fn with_serde_context<R>(&self, tx: &Sender<super::handle::RefOp>, mut f: impl FnMut() -> R) -> R {
+    pub fn with_serde_context<R>(
+        &self,
+        tx: &Sender<super::handle::RefOp>,
+        mut f: impl FnMut() -> R,
+    ) -> R {
         let mut result = None;
         self.io.with_runtime(&mut |runtime| {
-            result =
-                Some(runtime.block_on(super::handle::SerdeContext::with(&self.data, tx.clone(), async { f() })));
+            result = Some(runtime.block_on(super::handle::SerdeContext::with(
+                &self.data,
+                tx.clone(),
+                async { f() },
+            )));
         });
         result.unwrap()
     }
