@@ -1,5 +1,4 @@
 use crate::{
-    handle::{RefOp, SerdeContext},
     io::DataRequest,
     io::LoaderIO,
     io::MetadataRequest,
@@ -938,11 +937,12 @@ impl Loader {
         }
     }
 
-    pub fn with_serde_context<R>(&self, tx: &Sender<RefOp>, mut f: impl FnMut() -> R) -> R {
+    #[cfg(feature = "handle")]
+    pub fn with_serde_context<R>(&self, tx: &Sender<super::handle::RefOp>, mut f: impl FnMut() -> R) -> R {
         let mut result = None;
         self.io.with_runtime(&mut |runtime| {
             result =
-                Some(runtime.block_on(SerdeContext::with(&self.data, tx.clone(), async { f() })));
+                Some(runtime.block_on(super::handle::SerdeContext::with(&self.data, tx.clone(), async { f() })));
         });
         result.unwrap()
     }
@@ -1071,6 +1071,7 @@ impl Loader {
     ) -> Result<()> {
         self.io.tick(&mut self.data);
         self.data.process_asset_changes(asset_storage);
+        #[cfg(feature = "invalidate_path")]
         self.data.process_path_changes();
         self.data.process_load_ops(asset_storage);
         self.data.process_load_states(asset_storage);
@@ -1103,6 +1104,7 @@ impl Loader {
     /// Invalidates indirect identifiers that may match the provided paths.
     ///
     /// This may cause indirect handles to resolve to new assets.
+    #[cfg(feature = "invalidate_path")]
     pub fn invalidate_paths(&self, paths: &[PathBuf]) {
         self.data.invalidate_paths(paths);
     }

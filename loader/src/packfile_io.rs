@@ -200,6 +200,7 @@ impl LoaderIO for PackfileReader {
 
     fn tick(&mut self, _loader: &mut LoaderState) {}
 
+    #[cfg(feature = "handle")]
     fn with_runtime(&self, f: &mut dyn FnMut(&tokio::runtime::Handle)) {
         let runtime = self.0.runtime.handle();
         f(runtime);

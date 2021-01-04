@@ -358,6 +358,7 @@ impl LoaderIO for RpcIO {
         runtime.check_asset_changes(loader);
     }
 
+    #[cfg(feature = "handle")]
     fn with_runtime(&self, f: &mut dyn FnMut(&tokio::runtime::Handle)) {
         let runtime = self.runtime.lock().unwrap();
         f(&runtime.runtime.handle())
