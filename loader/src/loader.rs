@@ -701,7 +701,8 @@ impl LoaderState {
         for entry in self.indirect_to_load.iter() {
             let indirect_id = entry.key();
             let handle = entry.value();
-            let cleaned_path = atelier_core::utils::canonicalize_path(&PathBuf::from(indirect_id.path()));
+            let cleaned_path =
+                atelier_core::utils::canonicalize_path(&PathBuf::from(indirect_id.path()));
             for change in &changes {
                 if change == &cleaned_path {
                     if let Some(mut indirect) = self.indirect_states.get_mut(&handle) {
@@ -1142,7 +1143,9 @@ mod tests {
     use crate::{rpc_io::RpcIO, storage::DefaultIndirectionResolver};
     use atelier_core::AssetUuid;
     use atelier_daemon::{init_logging, AssetDaemon};
-    use atelier_importer::{AsyncImporter, ImportedAsset, ImportOp, ImporterValue, Result as ImportResult};
+    use atelier_importer::{
+        AsyncImporter, ImportOp, ImportedAsset, ImporterValue, Result as ImportResult,
+    };
     use futures_core::future::BoxFuture;
     use futures_io::AsyncRead;
     use futures_util::io::AsyncReadExt;
@@ -1443,9 +1446,3 @@ mod tests {
             .expect("Failed to spawn `atelier-daemon` thread.")
     }
 }
-
-trait IndirectionResolver {}
-
-/// Resolves indirect [`LoadHandle`]s. See [`LoadHandle::is_indirect`] for details.
-#[derive(Clone)]
-pub struct IndirectionTable(pub(crate) Arc<DashMap<LoadHandle, LoadHandle>>);

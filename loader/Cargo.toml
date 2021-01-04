@@ -36,6 +36,7 @@ memmap = { version = "0.7", optional = true }
 thread_local = { version = "1.0", optional = true }
 
 [dev-dependencies]
+atelier-core = { path = "../core", version = "0.1.0", features = [ "type_uuid" ] }
 atelier-daemon = { path = "../daemon", version = "0.1.0" }
 atelier-importer = { path = "../importer", version = "0.1.0" }
 uuid = { version = "0.8", features = ["v4"] }
