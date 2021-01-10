@@ -6,6 +6,8 @@ use std::{
         Arc,
     },
 };
+#[cfg(feature = "bevy_reflect_impls")]
+use bevy_reflect::Reflect;
 
 use atelier_core::{AssetMetadata, AssetRef, AssetTypeId, AssetUuid};
 use crossbeam_channel::Sender;
@@ -14,6 +16,7 @@ use dashmap::DashMap;
 /// Loading ID allocated by [`Loader`](crate::loader::Loader) to track loading of a particular asset
 /// or an indirect reference to an asset.
 #[derive(Copy, Clone, PartialEq, Eq, Debug, Hash)]
+#[cfg_attr(feature = "bevy_reflect_impls", derive(Reflect))]
 pub struct LoadHandle(pub u64);
 
 impl LoadHandle {

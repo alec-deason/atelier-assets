@@ -8,6 +8,8 @@ use std::{
         Arc, Mutex, RwLock,
     },
 };
+#[cfg(feature = "bevy_reflect_impls")]
+use bevy_reflect::Reflect;
 
 use crossbeam_channel::{unbounded, Receiver, Sender};
 use futures_core::future::{BoxFuture, Future};
@@ -47,7 +49,9 @@ pub fn process_ref_ops(loader: &Loader, rx: &Receiver<RefOp>) {
 }
 
 /// Keeps track of whether a handle ref is a strong, weak or "internal" ref
-#[derive(Debug)]
+#[derive(Debug, Clone)]
+#[cfg_attr(feature = "bevy_reflect_impls", derive(Reflect))]
+#[cfg_attr(feature = "bevy_reflect_impls", reflect_value)]
 pub enum HandleRefType {
     /// Strong references decrement the count on drop
     Strong(Sender<RefOp>),
@@ -60,6 +64,7 @@ pub enum HandleRefType {
     None,
 }
 
+#[cfg_attr(feature = "bevy_reflect_impls", derive(Reflect))]
 struct HandleRef {
     id: LoadHandle,
     ref_type: HandleRefType,
@@ -119,9 +124,11 @@ impl AssetHandle for HandleRef {
 
 /// Handle to an asset.
 #[derive(Eq)]
-pub struct Handle<T: ?Sized> {
+#[cfg_attr(feature = "bevy_reflect_impls", derive(Reflect))]
+pub struct Handle<T: ?Sized + 'static> {
     handle_ref: HandleRef,
-    marker: PhantomData<T>,
+    #[cfg_attr(feature = "bevy_reflect_impls", reflect(ignore))]
+    marker: PhantomData<fn() -> T>,
 }
 
 impl<T: ?Sized> PartialEq for Handle<T> {
@@ -200,6 +207,7 @@ impl<T> AssetHandle for Handle<T> {
 ///
 /// This is returned by `Loader::load_asset_generic` for assets loaded by UUID.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "bevy_reflect_impls", derive(Reflect))]
 pub struct GenericHandle {
     handle_ref: HandleRef,
 }

@@ -22,6 +22,8 @@ serde = { version = "1", features = ["derive"], optional = true }
 uuid = { version = "0.8.2", optional = true }
 memmap = { version = "0.7", optional = true }
 thread_local = { version = "1.0", optional = true }
+bevy_reflect = { git = "https://github.com/bevyengine/bevy.git", version = "0.4.0", optional = true }
+bevy_reflect_derive = { git = "https://github.com/bevyengine/bevy.git", version = "0.4.0", optional = true }
 
 
 [features]
@@ -46,3 +48,4 @@ rpc_io = [
 ]
 invalidate_path = ["atelier-core/path_utils"]
 handle = ["serde", "uuid"]
+bevy_reflect_impls = ["bevy_reflect_derive", "bevy_reflect"]
